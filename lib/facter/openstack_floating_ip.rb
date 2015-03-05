@@ -11,7 +11,12 @@ Facter.add('openstack_floating_ip') do
     end
 
     if ! floatingip
-      floatingip = Facter.value(:ec2_public_ipv4)
+      begin
+        data = JSON.parse(IO.read('/config/ec2/latest/meta-data.json'))
+        floatingip = data['public-ipv4']
+      rescue
+        floatingip = Facter.value(:ec2_public_ipv4)
+      end
     end
     floatingip
   end
